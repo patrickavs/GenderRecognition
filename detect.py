@@ -3,7 +3,9 @@
 import cv2
 import math
 import argparse
+import time
 
+# detect where the faces are and draw a rectangle around them
 def highlightFace(net, frame, conf_threshold=0.7):
     frameOpencvDnn=frame.copy()
     frameHeight=frameOpencvDnn.shape[0]
@@ -45,18 +47,30 @@ faceNet=cv2.dnn.readNet(faceModel,faceProto)
 ageNet=cv2.dnn.readNet(ageModel,ageProto)
 genderNet=cv2.dnn.readNet(genderModel,genderProto)
 
+startTime = time.time()
+
+# get the image as frame, NOT RELATED TO VIDEO CAMERAS OR ANYTHING
 video=cv2.VideoCapture(args.image if args.image else 0)
 padding=20
 while cv2.waitKey(1)<0 :
     hasFrame,frame=video.read()
     if not hasFrame:
-        cv2.waitKey()
+        print("The process took %s ms" %((time.time() - startTime) * 1000))
+        # work around the infinite loop issue with the cv2 ui
+        while True:
+            key = cv2.waitKey(100)
+            if key > 0:
+                cv2.destroyAllWindows()
+                break
+            if cv2.getWindowProperty("test",cv2.WND_PROP_VISIBLE) < 1:
+                break
         break
     
     resultImg,faceBoxes=highlightFace(faceNet,frame)
     if not faceBoxes:
         print("No face detected")
 
+    # for all detected faces put gender and age text close to the face box
     for faceBox in faceBoxes:
         face=frame[max(0,faceBox[1]-padding):
                    min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
@@ -74,4 +88,4 @@ while cv2.waitKey(1)<0 :
         print(f'Age: {age[1:-1]} years')
 
         cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
-        cv2.imshow("Detecting age and gender", resultImg)
+        cv2.imshow("test", resultImg)
