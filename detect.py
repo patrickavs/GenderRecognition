@@ -29,8 +29,13 @@ def highlightFace(net, frame, conf_threshold=0.7):
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--image')
+parser.add_argument('--camera')
 
 args=parser.parse_args()
+camera_id = 1
+
+if args.camera:
+    camera_id = int(args.camera)
 
 faceProto="opencv_face_detector.pbtxt"
 faceModel="opencv_face_detector_uint8.pb"
@@ -50,7 +55,7 @@ genderNet=cv2.dnn.readNet(genderModel,genderProto)
 startTime = time.time()
 
 # get the image as frame, NOT RELATED TO VIDEO CAMERAS OR ANYTHING
-video=cv2.VideoCapture(args.image if args.image else 0)
+video=cv2.VideoCapture(args.image if args.image else camera_id)
 padding=20
 while cv2.waitKey(1)<0 :
     hasFrame,frame=video.read()
