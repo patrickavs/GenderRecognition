@@ -47,15 +47,13 @@ faceNet=cv2.dnn.readNet(faceModel,faceProto)
 ageNet=cv2.dnn.readNet(ageModel,ageProto)
 genderNet=cv2.dnn.readNet(genderModel,genderProto)
 
-startTime = time.time()
-
 # get the image as frame, NOT RELATED TO VIDEO CAMERAS OR ANYTHING
 video=cv2.VideoCapture(args.image if args.image else 0)
 padding=20
 while cv2.waitKey(1)<0 :
     hasFrame,frame=video.read()
+    startTime = time.time()
     if not hasFrame:
-        print("The process took %s ms" %((time.time() - startTime) * 1000))
         # work around the infinite loop issue with the cv2 ui
         while True:
             key = cv2.waitKey(100)
@@ -86,6 +84,10 @@ while cv2.waitKey(1)<0 :
         agePreds=ageNet.forward()
         age=ageList[agePreds[0].argmax()]
         print(f'Age: {age[1:-1]} years')
+        
+        endTime = time.time()
+        totalTime = endTime - startTime
+        print(f"The process took {totalTime * 1000} ms")
 
         cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
         cv2.imshow("test", resultImg)
