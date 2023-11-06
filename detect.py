@@ -1,9 +1,20 @@
 #Copyright (c) 2019 Mahesh Sawant Gender-Age-Detection
 
 import cv2
-import math
 import argparse
 import time
+import sys
+
+def get_camera_source(camera_arg):
+    if camera_arg is not None:
+        return int(camera_arg) 
+    else:
+        for camera_id in range(10):  
+            video = cv2.VideoCapture(camera_id)
+            if video.isOpened():
+                video.release() 
+                return camera_id
+        return None  
 
 # detect where the faces are and draw a rectangle around them
 def highlightFace(net, frame, conf_threshold=0.7):
@@ -32,10 +43,11 @@ parser.add_argument('--image')
 parser.add_argument('--camera')
 
 args=parser.parse_args()
-camera_id = 1
 
-if args.camera:
-    camera_id = int(args.camera)
+camera_id = get_camera_source(args.camera)
+if camera_id is None:
+    print(f"no camera found!")
+    sys.exit()
 
 faceProto="opencv_face_detector.pbtxt"
 faceModel="opencv_face_detector_uint8.pb"
