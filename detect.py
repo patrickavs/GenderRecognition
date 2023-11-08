@@ -104,6 +104,10 @@ while cv2.waitKey(1)<0 :
         face=frame[max(0,faceBox[1]-padding):
                    min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
                    :min(faceBox[2]+padding, frame.shape[1]-1)]
+        
+        # work around the bug where the model might detect invalid faces with dimensions 0,0
+        if (not face.shape[0] or not face.shape[1]):
+            continue
 
         blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
         genderNet.setInput(blob)
