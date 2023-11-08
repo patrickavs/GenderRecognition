@@ -41,13 +41,23 @@ def highlightFace(net, frame, conf_threshold=0.7):
 parser=argparse.ArgumentParser()
 parser.add_argument('--image')
 parser.add_argument('--camera')
+parser.add_argument('--ip')
 
 args=parser.parse_args()
 
-camera_id = get_camera_source(args.camera)
-if camera_id is None:
-    print(f"no camera found!")
-    sys.exit()
+video_arg = None
+
+if (args.camera or (args.ip is None and args.image is None)):
+    camera_id = get_camera_source(args.camera)
+    if camera_id is None:
+        print(f"no camera found!")
+        sys.exit()
+    else:
+        video_arg = camera_id
+elif (args.ip):
+    video_arg = 0
+else:
+    video_arg = args.image
 
 faceProto="opencv_face_detector.pbtxt"
 faceModel="opencv_face_detector_uint8.pb"
@@ -67,8 +77,10 @@ genderNet=cv2.dnn.readNet(genderModel,genderProto)
 startTime = time.time()
 
 # get the image as frame, NOT RELATED TO VIDEO CAMERAS OR ANYTHING
-video=cv2.VideoCapture(args.image if args.image else camera_id)
+video=cv2.VideoCapture(video_arg)
 padding=20
+if (args.ip is not None):
+    video.open(args.ip)
 while cv2.waitKey(1)<0 :
     hasFrame,frame=video.read()
     if not hasFrame:
@@ -105,4 +117,5 @@ while cv2.waitKey(1)<0 :
         print(f'Age: {age[1:-1]} years')
 
         cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
-        cv2.imshow("test", resultImg)
+    
+    cv2.imshow("test", resultImg)
