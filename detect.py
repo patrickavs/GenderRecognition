@@ -38,7 +38,6 @@ def highlightFace(net, frame, conf_threshold=0.7):
             cv2.rectangle(frameOpencvDnn, (x1,y1), (x2,y2), (0,255,0), int(round(frameHeight/150)), 8)
     return frameOpencvDnn,faceBoxes
 
-
 parser=argparse.ArgumentParser()
 parser.add_argument('--image')
 parser.add_argument('--camera')
