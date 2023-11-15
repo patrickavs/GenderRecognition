@@ -92,6 +92,7 @@ weights_path = "opencv_face_detector_uint8.pb"
 net = cv2.dnn.readNet(prototxt_path, weights_path)
 
 while cv2.waitKey(1) < 0:
+    start_time = time.time()
     has_frame, frame = video.read()
 
     if not has_frame:
@@ -118,6 +119,10 @@ while cv2.waitKey(1) < 0:
         face_detection_thread.join()
 
         frame = result_queue.get()
+        
+        end_time = time.time() 
+        elapsed_time = end_time - start_time
+        print(f"Time taken for detections: {elapsed_time * 1000} ms")
 
     cv2.imshow("test", frame)
 
