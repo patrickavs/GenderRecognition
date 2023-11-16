@@ -176,8 +176,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.image is not None:
-        # absolute path
-        images = [cv2.imread(image_path) for image_path in args.image if os.path.isfile(image_path)]
+        # Check if the provided path is a directory
+        if os.path.isdir(args.image[0]):
+            # If it's a directory, get all files with a supported image extension
+            image_files = [os.path.join(args.image[0], f) for f in os.listdir(args.image[0]) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        else:
+            # If it's not a directory, assume it's a list of image files
+            image_files = args.image
+
+        # Use absolute paths for the images and filter out non-existent files
+        images = [cv2.imread(image_path) for image_path in image_files if os.path.isfile(image_path)]
         if not images:
             print("No valid images found.")
             sys.exit()
@@ -185,6 +193,8 @@ if __name__ == '__main__':
         images = []
 
     age_gender_detector = AgeGenderDetector(args.camera, None, args.ip)
+    age_gender_detector.run_on_images(images)
+    
     result_json = age_gender_detector.run_on_images(images)
 
     print(json.dumps(result_json, indent=2))
