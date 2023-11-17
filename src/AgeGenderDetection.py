@@ -14,20 +14,23 @@ AGE_PROTO = "age_deploy.prototxt"
 GENDER_MODEL = "gender_net.caffemodel"
 GENDER_PROTO = "gender_deploy.prototxt"
 
+
 def get_camera_or_argument(camera_arg):
-        if camera_arg is not None:
-            return int(camera_arg)
-        else:
-            for camera_id in range(10):
-                video = cv2.VideoCapture(camera_id)
-                if video.isOpened():
-                    video.release()
-                    return camera_id
-            return None
+    if camera_arg is not None:
+        return int(camera_arg)
+    else:
+        for camera_id in range(10):
+            video = cv2.VideoCapture(camera_id)
+            if video.isOpened():
+                video.release()
+                return camera_id
+        return None
+
+
 class GenderDetector:
     def __init__(self):
         self.net = cv2.dnn.readNet(GENDER_MODEL, GENDER_PROTO)
-        self.gender_list = ['Male', 'Female']
+        self.gender_list = ["Male", "Female"]
 
     def predict_gender(self, face_blob):
         self.net.setInput(face_blob)
@@ -62,7 +65,9 @@ class FaceDetector:
     def highlight_face(self, frame, conf_threshold=0.7):
         frame_opencv_dnn = frame.copy()
         frame_height, frame_width, _ = frame_opencv_dnn.shape
-        blob = cv2.dnn.blobFromImage(frame_opencv_dnn, 1.0, (300, 300), self.mean_values, True, False)
+        blob = cv2.dnn.blobFromImage(
+            frame_opencv_dnn, 1.0, (300, 300), self.mean_values, True, False
+        )
 
         self.net.setInput(blob)
         detections = self.net.forward()
@@ -71,11 +76,21 @@ class FaceDetector:
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
             if confidence > conf_threshold:
-                x1, y1, x2, y2 = int(detections[0, 0, i, 3] * frame_width), int(
-                    detections[0, 0, i, 4] * frame_height), int(detections[0, 0, i, 5] * frame_width), int(
-                    detections[0, 0, i, 6] * frame_height)
+                x1, y1, x2, y2 = (
+                    int(detections[0, 0, i, 3] * frame_width),
+                    int(detections[0, 0, i, 4] * frame_height),
+                    int(detections[0, 0, i, 5] * frame_width),
+                    int(detections[0, 0, i, 6] * frame_height),
+                )
                 face_boxes.append([x1, y1, x2, y2])
-                cv2.rectangle(frame_opencv_dnn, (x1, y1), (x2, y2), (0, 255, 0), int(round(frame_height / 150)), 8)
+                cv2.rectangle(
+                    frame_opencv_dnn,
+                    (x1, y1),
+                    (x2, y2),
+                    (0, 255, 0),
+                    int(round(frame_height / 150)),
+                    8,
+                )
 
         return frame_opencv_dnn, face_boxes
 
@@ -90,26 +105,42 @@ class AgeGenderDetector:
         #     self.camera_id = image_arg
         # elif ip_arg is not None:
         #     self.camera_id = ip_arg
-            
-        age_ranges = ['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-70)', '(71-80)', '(81-90)', '(91-100)']
+
+        age_ranges = [
+            "(0-2)",
+            "(4-6)",
+            "(8-12)",
+            "(15-20)",
+            "(25-32)",
+            "(38-43)",
+            "(48-53)",
+            "(60-70)",
+            "(71-80)",
+            "(81-90)",
+            "(91-100)",
+        ]
         self.gender_detector = GenderDetector()
         self.age_detector = AgeDetector(age_ranges)
-        self.face_highlighter = FaceDetector((78.4263377603, 87.7689143744, 114.895847746))
+        self.face_highlighter = FaceDetector(
+            (78.4263377603, 87.7689143744, 114.895847746)
+        )
 
     def detect_age_gender(self, frame, face_boxes, padding=20):
         results = []
         for face_box in face_boxes:
             face = self.extract_face(frame, face_box, padding)
-            face_blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), (78.4263377603, 87.7689143744, 114.895847746),
-                                              swapRB=False)
+            face_blob = cv2.dnn.blobFromImage(
+                face,
+                1.0,
+                (227, 227),
+                (78.4263377603, 87.7689143744, 114.895847746),
+                swapRB=False,
+            )
 
             gender = self.gender_detector.predict_gender(face_blob)
             age = self.age_detector.predict_age(face_blob)
 
-            results.append({
-                'gender': gender,
-                'age': age
-            })
+            results.append({"gender": gender, "age": age})
 
         return results
 
@@ -155,37 +186,48 @@ class AgeGenderDetector:
             total_time = end_time - start_time
             print(f"The process took {total_time * 1000} ms")
 
-        return {'results': results}
+        return {"results": results}
+
 
 def handle_no_frame(self):
-        while True:
-            key = cv2.waitKey(100)
-            if key > 0:
-                cv2.destroyAllWindows()
-                break
-            window_status = cv2.getWindowProperty("Gender/Age Recognition", cv2.WND_PROP_VISIBLE)
-            if window_status is None or window_status < 0:
-                break
+    while True:
+        key = cv2.waitKey(100)
+        if key > 0:
+            cv2.destroyAllWindows()
+            break
+        window_status = cv2.getWindowProperty(
+            "Gender/Age Recognition", cv2.WND_PROP_VISIBLE
+        )
+        if window_status is None or window_status < 0:
+            break
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--image', nargs='+')
-    parser.add_argument('--camera')
-    parser.add_argument('--ip')
+    parser.add_argument("--image", nargs="+")
+    parser.add_argument("--camera")
+    parser.add_argument("--ip")
 
     args = parser.parse_args()
 
     if args.image is not None:
-        # Check if the provided path is a directory
+        # Check if it's a directory
         if os.path.isdir(args.image[0]):
             # If it's a directory, get all files with a supported image extension
-            image_files = [os.path.join(args.image[0], f) for f in os.listdir(args.image[0]) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+            image_files = [
+                os.path.join(args.image[0], f)
+                for f in os.listdir(args.image[0])
+                if f.lower().endswith((".png", ".jpg", ".jpeg"))
+            ]
         else:
-            # If it's not a directory, assume it's a list of image files
+            # If not a directory, maybe a list of image files
             image_files = args.image
 
-        # Use absolute paths for the images and filter out non-existent files
-        images = [cv2.imread(image_path) for image_path in image_files if os.path.isfile(image_path)]
+        images = [
+            cv2.imread(image_path)
+            for image_path in image_files
+            if os.path.isfile(image_path)
+        ]
         if not images:
             print("No valid images found.")
             sys.exit()
@@ -194,7 +236,7 @@ if __name__ == '__main__':
 
     age_gender_detector = AgeGenderDetector(args.camera, None, args.ip)
     age_gender_detector.run_on_images(images)
-    
+
     result_json = age_gender_detector.run_on_images(images)
 
     print(json.dumps(result_json, indent=2))
