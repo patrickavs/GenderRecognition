@@ -4,19 +4,12 @@ import time
 import sys
 import numpy as np
 import json
+import os
 from deepface import DeepFace
 from deepface.extendedmodels import Age
 
 class AgeGenderDetector:
     # Constant variables
-
-    # Model paths
-    __faceProto = "opencv_face_detector.pbtxt"
-    __faceModel = "opencv_face_detector_uint8.pb"
-    __ageProto = "age_deploy.prototxt"
-    __ageModel = "age_net.caffemodel"
-    __genderProto = "gender_deploy.prototxt"
-    __genderModel = "gender_net.caffemodel"
 
     __MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
 
@@ -35,14 +28,23 @@ class AgeGenderDetector:
     __genderList = ["Male", "Female"]
 
     def __init__(self, use_new_age=False):
-        self.faceNet = cv2.dnn.readNet(self.__faceModel, self.__faceProto)
-        self.genderNet = cv2.dnn.readNet(self.__genderModel, self.__genderProto)
+        model_location = os.path.dirname(os.path.abspath(__file__))
+        model_location = os.path.join(model_location, "models")
+        faceProto = os.path.join(model_location ,"opencv_face_detector.pbtxt")
+        faceModel = os.path.join(model_location, "opencv_face_detector_uint8.pb")
+        ageProto = os.path.join(model_location, "age_deploy.prototxt")
+        ageModel = os.path.join(model_location, "age_net.caffemodel")
+        genderProto = os.path.join(model_location, "gender_deploy.prototxt")
+        genderModel = os.path.join(model_location, "gender_net.caffemodel")
+
+        self.faceNet = cv2.dnn.readNet(faceModel, faceProto)
+        self.genderNet = cv2.dnn.readNet(genderModel, genderProto)
         
         self.use_new_age = use_new_age
         if self.use_new_age:
             self.newAgeModel = DeepFace.build_model("Age")
         else:
-            self.ageNet = cv2.dnn.readNet(self.__ageModel, self.__ageProto)
+            self.ageNet = cv2.dnn.readNet(ageModel, ageProto)
 
     def highlight_face(self, frame, conf_threshold=0.7):
         frame_opencv_dnn = frame.copy()
