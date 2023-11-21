@@ -10,17 +10,17 @@ class AgeGenderDetector:
     # Constant variables
 
     # Model paths
-    self.__faceProto = "opencv_face_detector.pbtxt"
-    self.__faceModel = "opencv_face_detector_uint8.pb"
-    self.__ageProto = "age_deploy.prototxt"
-    self.__ageModel = "age_net.caffemodel"
-    self.__genderProto = "gender_deploy.prototxt"
-    self.__genderModel = "gender_net.caffemodel"
+    __faceProto = "opencv_face_detector.pbtxt"
+    __faceModel = "opencv_face_detector_uint8.pb"
+    __ageProto = "age_deploy.prototxt"
+    __ageModel = "age_net.caffemodel"
+    __genderProto = "gender_deploy.prototxt"
+    __genderModel = "gender_net.caffemodel"
 
-    self.__MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+    __MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
 
     # Possbile value list for models
-    self.__ageList = [
+    __ageList = [
         "(0-2)",
         "(4-6)",
         "(8-12)",
@@ -31,19 +31,19 @@ class AgeGenderDetector:
         "(60-100)",
     ]
 
-    self.__genderList = ["Male", "Female"]
+    __genderList = ["Male", "Female"]
 
     def __init__(self):
-        self.faceNet = cv2.dnn.readNet(self.faceModel, self.faceProto)
-        self.ageNet = cv2.dnn.readNet(self.ageModel, self.ageProto)
-        self.genderNet = cv2.dnn.readNet(self.genderModel, self.genderProto)
+        self.faceNet = cv2.dnn.readNet(self.__faceModel, self.__faceProto)
+        self.ageNet = cv2.dnn.readNet(self.__ageModel, self.__ageProto)
+        self.genderNet = cv2.dnn.readNet(self.__genderModel, self.__genderProto)
 
     def highlight_face(self, frame, conf_threshold=0.7):
         frame_opencv_dnn = frame.copy()
         frame_height = frame_opencv_dnn.shape[0]
         frame_width = frame_opencv_dnn.shape[1]
         blob = cv2.dnn.blobFromImage(
-            frame_opencv_dnn, 1.0, (300, 300), self.MODEL_MEAN_VALUES, True, False
+            frame_opencv_dnn, 1.0, (300, 300), self.__MODEL_MEAN_VALUES, True, False
         )
 
         self.faceNet.setInput(blob)
@@ -81,16 +81,16 @@ class AgeGenderDetector:
             ]
 
             blob = cv2.dnn.blobFromImage(
-                face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False
+                face, 1.0, (227, 227), self.__MODEL_MEAN_VALUES, swapRB=False
             )
 
             self.genderNet.setInput(blob)
             gender_preds = self.genderNet.forward()
-            gender = self.genderList[gender_preds[0].argmax()]
+            gender = self.__genderList[gender_preds[0].argmax()]
 
             self.ageNet.setInput(blob)
             age_preds = self.ageNet.forward()
-            age = self.ageList[age_preds[0].argmax()][1:-1]
+            age = self.__ageList[age_preds[0].argmax()][1:-1]
 
             results.append({"gender": gender, "age": age})
 
