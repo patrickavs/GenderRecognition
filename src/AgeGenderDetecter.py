@@ -7,27 +7,33 @@ import json
 
 
 class AgeGenderDetector:
+    # Constant variables
+
+    # Model paths
+    self.__faceProto = "opencv_face_detector.pbtxt"
+    self.__faceModel = "opencv_face_detector_uint8.pb"
+    self.__ageProto = "age_deploy.prototxt"
+    self.__ageModel = "age_net.caffemodel"
+    self.__genderProto = "gender_deploy.prototxt"
+    self.__genderModel = "gender_net.caffemodel"
+
+    self.__MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+
+    # Possbile value list for models
+    self.__ageList = [
+        "(0-2)",
+        "(4-6)",
+        "(8-12)",
+        "(15-20)",
+        "(25-32)",
+        "(38-43)",
+        "(48-53)",
+        "(60-100)",
+    ]
+
+    self.__genderList = ["Male", "Female"]
+
     def __init__(self):
-        self.faceProto = "opencv_face_detector.pbtxt"
-        self.faceModel = "opencv_face_detector_uint8.pb"
-        self.ageProto = "age_deploy.prototxt"
-        self.ageModel = "age_net.caffemodel"
-        self.genderProto = "gender_deploy.prototxt"
-        self.genderModel = "gender_net.caffemodel"
-
-        self.MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
-        self.ageList = [
-            "(0-2)",
-            "(4-6)",
-            "(8-12)",
-            "(15-20)",
-            "(25-32)",
-            "(38-43)",
-            "(48-53)",
-            "(60-100)",
-        ]
-        self.genderList = ["Male", "Female"]
-
         self.faceNet = cv2.dnn.readNet(self.faceModel, self.faceProto)
         self.ageNet = cv2.dnn.readNet(self.ageModel, self.ageProto)
         self.genderNet = cv2.dnn.readNet(self.genderModel, self.genderProto)
