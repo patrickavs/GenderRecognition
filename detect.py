@@ -4,6 +4,7 @@ import cv2
 import argparse
 import time
 import sys
+import pandas
 
 def get_camera_source(camera_arg):
     if camera_arg is not None:
