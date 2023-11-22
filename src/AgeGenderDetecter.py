@@ -28,7 +28,7 @@ class AgeGenderDetector:
 
     __genderList = ["Male", "Female"]
 
-    def __init__(self, use_new_age=False):
+    def __init__(self, use_new_age=False, silent=False):
         model_location = os.path.dirname(os.path.abspath(__file__))
         model_location = os.path.join(model_location, "models")
         faceProto = os.path.join(model_location, "opencv_face_detector.pbtxt")
@@ -47,7 +47,9 @@ class AgeGenderDetector:
         else:
             self.ageNet = cv2.dnn.readNet(ageModel, ageProto)
 
-    def highlight_face(self, frame, conf_threshold=0.7, draw=True):
+        self.silent = silent
+
+    def highlight_face(self, frame, conf_threshold=0.7):
         frame_opencv_dnn = frame.copy()
         frame_height = frame_opencv_dnn.shape[0]
         frame_width = frame_opencv_dnn.shape[1]
@@ -66,7 +68,7 @@ class AgeGenderDetector:
                 x2 = int(detections[0, 0, i, 5] * frame_width)
                 y2 = int(detections[0, 0, i, 6] * frame_height)
                 face_boxes.append([x1, y1, x2, y2])
-                if draw:
+                if not self.silent:
                     cv2.rectangle(
                         frame_opencv_dnn,
                         (x1, y1),
@@ -112,7 +114,7 @@ class AgeGenderDetector:
 
             results.append({"gender": gender, "age": age})
 
-            if draw:
+            if not self.silent:
                 color = (0, 255, 0)
                 line_thickness = 2
                 font = cv2.FONT_HERSHEY_DUPLEX

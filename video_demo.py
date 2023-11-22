@@ -43,7 +43,7 @@ if __name__ == "__main__":
         else:
             video_arg = args.image
 
-        model = AgeGenderDetector(args.new_age)
+        model = AgeGenderDetector(args.new_age, args.silent)
 
         video=cv2.VideoCapture(video_arg)
         padding=20
@@ -65,13 +65,13 @@ if __name__ == "__main__":
                         break
                 break
             
-            resultImg, faceBoxes = model.highlight_face(frame, draw=(not args.silent))
+            resultImg, faceBoxes = model.highlight_face(frame)
 
             if not faceBoxes:
                 print("No face detected")
                 continue
             
-            model_results = model.detect_age_gender(resultImg, faceBoxes, padding, draw=(not args.silent))
+            model_results = model.detect_age_gender(resultImg, faceBoxes, padding)
             endTime = time.time()
             totalTime = (endTime - startTime) * 1000
             print(f"Action took {totalTime}ms")
