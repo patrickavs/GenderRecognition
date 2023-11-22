@@ -61,7 +61,7 @@ if __name__ == "__main__":
                         video.release()
                         cv2.destroyAllWindows()
                         break
-                    if cv2.getWindowProperty("test",cv2.WND_PROP_VISIBLE) < 1:
+                    if cv2.getWindowProperty("Video Demo",cv2.WND_PROP_VISIBLE) < 1:
                         break
                 break
             
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             print(model_results)
             
             if not args.silent:
-                cv2.imshow("test", resultImg)
+                cv2.imshow("Video Demo", resultImg)
     except KeyboardInterrupt:
         print("\nExiting by keyboard interrupt...")
     finally:
