@@ -134,7 +134,7 @@ class AgeGenderDetector:
                 font_color,
                 line_thickness,
             )
-            return results
+        return results
 
     def run(self, input_data=None):
         padding = 20
