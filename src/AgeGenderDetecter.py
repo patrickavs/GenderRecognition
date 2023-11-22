@@ -115,7 +115,6 @@ class AgeGenderDetector:
             line_thickness = 2
             font = cv2.FONT_HERSHEY_DUPLEX
             font_scale = 0.7
-            font_color = (255, 255, 255)
             # Calculate the center of the face
             center_x = (face_box[0] + face_box[2]) // 2
             center_y = (face_box[1] + face_box[3]) // 4
@@ -131,7 +130,7 @@ class AgeGenderDetector:
                 (text_x, text_y),
                 font,
                 font_scale,
-                font_color,
+                color,
                 line_thickness,
             )
         return results
