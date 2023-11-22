@@ -7,12 +7,12 @@ import numpy as np
 import os
 
 # models
-FACE_MODEL = "opencv_face_detector_uint8.pb"
-FACE_PROTO = "opencv_face_detector.pbtxt"
-AGE_MODEL = "age_net.caffemodel"
-AGE_PROTO = "age_deploy.prototxt"
-GENDER_MODEL = "gender_net.caffemodel"
-GENDER_PROTO = "gender_deploy.prototxt"
+FACE_MODEL = "src/models/opencv_face_detector_uint8.pb"
+FACE_PROTO = "src/models/opencv_face_detector.pbtxt"
+AGE_MODEL = "src/models/age_net.caffemodel"
+AGE_PROTO = "src/models/age_deploy.prototxt"
+GENDER_MODEL = "src/models/gender_net.caffemodel"
+GENDER_PROTO = "src/models/gender_deploy.prototxt"
 
 
 def get_camera_or_argument(camera_arg):

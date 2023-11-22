@@ -8,6 +8,7 @@ import os
 from deepface import DeepFace
 from deepface.extendedmodels import Age
 
+
 class AgeGenderDetector:
     # Constant variables
 
@@ -30,7 +31,7 @@ class AgeGenderDetector:
     def __init__(self, use_new_age=False):
         model_location = os.path.dirname(os.path.abspath(__file__))
         model_location = os.path.join(model_location, "models")
-        faceProto = os.path.join(model_location ,"opencv_face_detector.pbtxt")
+        faceProto = os.path.join(model_location, "opencv_face_detector.pbtxt")
         faceModel = os.path.join(model_location, "opencv_face_detector_uint8.pb")
         ageProto = os.path.join(model_location, "age_deploy.prototxt")
         ageModel = os.path.join(model_location, "age_net.caffemodel")
@@ -39,7 +40,7 @@ class AgeGenderDetector:
 
         self.faceNet = cv2.dnn.readNet(faceModel, faceProto)
         self.genderNet = cv2.dnn.readNet(genderModel, genderProto)
-        
+
         self.use_new_age = use_new_age
         if self.use_new_age:
             self.newAgeModel = DeepFace.build_model("Age")
