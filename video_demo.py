@@ -4,9 +4,6 @@ import cv2
 import argparse
 import time
 import sys
-import numpy as np
-from deepface import DeepFace
-from deepface.extendedmodels import Age
 from src.AgeGenderDetecter import AgeGenderDetector
 
 # find the working webcam on the system
