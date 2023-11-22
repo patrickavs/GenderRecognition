@@ -65,8 +65,11 @@ while cv2.waitKey(1)<0 :
     if not faceBoxes:
         print("No face detected")
         continue
-
+    
     model_results = model.detect_age_gender(resultImg, faceBoxes, padding)
+    endTime = time.time()
+    totalTime = (endTime - startTime) * 1000
+    print(f"Action took {totalTime}ms")
     print(model_results)
     
     cv2.imshow("test", resultImg)
