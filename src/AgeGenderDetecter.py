@@ -47,7 +47,7 @@ class AgeGenderDetector:
         else:
             self.ageNet = cv2.dnn.readNet(ageModel, ageProto)
 
-    def highlight_face(self, frame, conf_threshold=0.7):
+    def highlight_face(self, frame, conf_threshold=0.7, draw=True):
         frame_opencv_dnn = frame.copy()
         frame_height = frame_opencv_dnn.shape[0]
         frame_width = frame_opencv_dnn.shape[1]
@@ -66,17 +66,18 @@ class AgeGenderDetector:
                 x2 = int(detections[0, 0, i, 5] * frame_width)
                 y2 = int(detections[0, 0, i, 6] * frame_height)
                 face_boxes.append([x1, y1, x2, y2])
-                cv2.rectangle(
-                    frame_opencv_dnn,
-                    (x1, y1),
-                    (x2, y2),
-                    (0, 255, 0),
-                    int(round(frame_height / 150)),
-                    8,
-                )
+                if draw:
+                    cv2.rectangle(
+                        frame_opencv_dnn,
+                        (x1, y1),
+                        (x2, y2),
+                        (0, 255, 0),
+                        int(round(frame_height / 150)),
+                        8,
+                    )
         return frame_opencv_dnn, face_boxes
 
-    def detect_age_gender(self, frame, face_boxes, padding=20):
+    def detect_age_gender(self, frame, face_boxes, padding=20, draw=True):
         results = []
 
         for face_box in face_boxes:
@@ -111,28 +112,29 @@ class AgeGenderDetector:
 
             results.append({"gender": gender, "age": age})
 
-            color = (0, 255, 0)
-            line_thickness = 2
-            font = cv2.FONT_HERSHEY_DUPLEX
-            font_scale = 0.7
-            # Calculate the center of the face
-            center_x = (face_box[0] + face_box[2]) // 2
-            center_y = (face_box[1] + face_box[3]) // 4
+            if draw:
+                color = (0, 255, 0)
+                line_thickness = 2
+                font = cv2.FONT_HERSHEY_DUPLEX
+                font_scale = 0.7
+                # Calculate the center of the face
+                center_x = (face_box[0] + face_box[2]) // 2
+                center_y = (face_box[1] + face_box[3]) // 4
 
-            # Calculate the position for displaying text at the center
-            text_x = center_x - (len(f"Gender: {gender}, Age: {age} years") * 4)
-            text_y = center_y - 10
+                # Calculate the position for displaying text at the center
+                text_x = center_x - (len(f"Gender: {gender}, Age: {age} years") * 4)
+                text_y = center_y - 10
 
-            # Display age and gender information at the center
-            cv2.putText(
-                frame,
-                f"Gender: {gender}, Age: {age} years",
-                (text_x, text_y),
-                font,
-                font_scale,
-                color,
-                line_thickness,
-            )
+                # Display age and gender information at the center
+                cv2.putText(
+                    frame,
+                    f"Gender: {gender}, Age: {age} years",
+                    (text_x, text_y),
+                    font,
+                    font_scale,
+                    color,
+                    line_thickness,
+                )
         return results
 
     def run(self, input_data=None):
