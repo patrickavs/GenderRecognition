@@ -79,7 +79,7 @@ class AgeGenderDetector:
                     )
         return frame_opencv_dnn, face_boxes
 
-    def detect_age_gender(self, frame, face_boxes, padding=20, draw=True):
+    def detect_age_gender(self, frame, face_boxes, padding=20):
         results = []
 
         for face_box in face_boxes:
