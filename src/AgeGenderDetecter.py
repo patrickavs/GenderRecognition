@@ -119,14 +119,6 @@ class AgeGenderDetector:
             center_x = (face_box[0] + face_box[2]) // 2
             center_y = (face_box[1] + face_box[3]) // 4
 
-            cv2.rectangle(
-                frame,
-                (face_box[0], face_box[1]),
-                (face_box[2], face_box[3]),
-                color,
-                line_thickness,
-            )
-
             # Calculate the position for displaying text at the center
             text_x = center_x - (len(f"Gender: {gender}, Age: {age} years") * 4)
             text_y = center_y - 10
@@ -166,13 +158,13 @@ class AgeGenderDetector:
                 print("No face detected")
                 continue
 
-            frame_results = self.detect_age_gender(frame, face_boxes, padding)
+            frame_results = self.detect_age_gender(result_img, face_boxes, padding)
             results.append(frame_results)
             end_time = time.time()
             total_time = end_time - start_time
             print(f"The process took {total_time * 1000} ms")
 
-            cv2.imshow("result", frame)
+            cv2.imshow("result", result_img)
             cv2.waitKey(1)
 
         # Convert the results to JSON
