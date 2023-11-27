@@ -28,7 +28,7 @@ class AgeGenderDetector:
 
     __genderList = ["Male", "Female"]
 
-    def __init__(self, use_new_age=False, silent=False):
+    def __init__(self, silent=False):
         model_location = os.path.dirname(os.path.abspath(__file__))
         model_location = os.path.join(model_location, "models")
         faceProto = os.path.join(model_location, "opencv_face_detector.pbtxt")
@@ -41,11 +41,7 @@ class AgeGenderDetector:
         self.faceNet = cv2.dnn.readNet(faceModel, faceProto)
         self.genderNet = cv2.dnn.readNet(genderModel, genderProto)
 
-        self.use_new_age = use_new_age
-        if self.use_new_age:
-            self.newAgeModel = DeepFace.build_model("Age")
-        else:
-            self.ageNet = cv2.dnn.readNet(ageModel, ageProto)
+        self.newAgeModel = DeepFace.build_model("Age")
 
         self.silent = silent
 
@@ -101,16 +97,12 @@ class AgeGenderDetector:
             gender = self.__genderList[gender_preds[0].argmax()]
 
             age = None
-            if self.use_new_age:
-                face = cv2.resize(face, (224, 224))
-                face = np.expand_dims(face, axis=0)
 
-                age_predictions = self.newAgeModel.predict(face, verbose=0)[0, :]
-                age = int(Age.findApparentAge(age_predictions))
-            else:
-                self.ageNet.setInput(blob)
-                age_preds = self.ageNet.forward()
-                age = self.__ageList[age_preds[0].argmax()][1:-1]
+            face = cv2.resize(face, (224, 224))
+            face = np.expand_dims(face, axis=0)
+
+            age_predictions = self.newAgeModel.predict(face, verbose=0)[0, :]
+            age = int(Age.findApparentAge(age_predictions))
 
             results.append({"gender": gender, "age": age})
 
@@ -181,10 +173,9 @@ class AgeGenderDetector:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--image", help="src/assets/cropped_images_array.npz")
-    parser.add_argument("--new_age", action="store_true")
     args = parser.parse_args()
 
-    age_gender_detector = AgeGenderDetector(args.new_age)
+    age_gender_detector = AgeGenderDetector()
 
     if args.image:
         if args.image.endswith(".npz"):
@@ -192,8 +183,7 @@ if __name__ == "__main__":
             with np.load(args.image) as data:
                 image_data = data["images"]
         else:
-            print("Invalid image file format. Please provide a .npz file.")
-            sys.exit(1)
+            image_data = [cv2.imread(args.image)]
 
         age_gender_detector.run(input_data={"images": image_data})
     else:
