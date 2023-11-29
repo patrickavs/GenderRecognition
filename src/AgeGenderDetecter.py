@@ -160,9 +160,6 @@ class AgeGenderDetector:
             total_time = end_time - start_time
             print(f"The process took {total_time * 1000} ms")
 
-            cv2.imshow("result", result_img)
-            cv2.waitKey(1)
-
         # Convert the results to JSON
         json_results = json.dumps(results)
         # Printing all json results
